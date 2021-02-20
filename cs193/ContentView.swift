@@ -6,18 +6,23 @@
 //
 
 import SwiftUI
-
+// View here
+// View wants to access the Model by ViewModel
+// show the current state of the model 
 struct ContentView: View {
+    var game: EmojiMemorizeGame;
+    // it's the ViewModel, a class
+    // it should be created when this ContentView is created
     var body: some View {
         HStack{
-            ForEach(0..<4){
+            // if you want to put ForEach(game.cards)
+            // cards need to be identifiable by adding id to cards
+            ForEach(0..<game.cards.count){
                 index in
-                if index%2 == 0{
-                    CardView(isFaceUp: true)
-                }
-                else {
-                    CardView(isFaceUp: false)
-                }
+                CardView(card: game.cards[index])
+                    .onTapGesture(perform: {
+                        game.choose(card:game.cards[index])
+                    })
             }
         }
         .padding()
@@ -27,22 +32,32 @@ struct ContentView: View {
 }
 
 struct CardView: View{
-    var isFaceUp:Bool;
+    var card: MemorizeGame<String>.Card;
+    // because we declare string in the ViewModel
+    // it's initialize by the cardView in ContentView 
     var body: some View{
         ZStack{
-            if isFaceUp{
-                RoundedRectangle(cornerRadius: 15.0).fill(Color.white)
-                RoundedRectangle(cornerRadius: 15.0).stroke()
-                Text("👻").font(.largeTitle)
+            if card.isFaceUp{
+                RoundedRectangle(cornerRadius: 15.0)
+                    .fill(Color.white)
+                    .aspectRatio(0.66, contentMode: .fit)
+                RoundedRectangle(cornerRadius: 15.0)
+                    .stroke()
+                    .aspectRatio(0.66, contentMode: .fit)
+                Text(card.cardContent).font(.largeTitle)
             }
             else{
-                RoundedRectangle(cornerRadius: 15.0).fill()
+                //RoundedRectangle(cornerRadius: 15.0).fill()
+                RoundedRectangle(cornerRadius: 15.0)
+                    .fill()
+                    .aspectRatio(0.66, contentMode: .fit)
             }
         }
     }
 }
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        // create viewModel on fly for preview
+        ContentView(game:EmojiMemorizeGame())
     }
 }

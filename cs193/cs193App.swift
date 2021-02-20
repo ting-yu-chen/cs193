@@ -11,7 +11,8 @@ import SwiftUI
 struct cs193App: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            let game = EmojiMemorizeGame()
+            ContentView(game:game)
         }
     }
 }
