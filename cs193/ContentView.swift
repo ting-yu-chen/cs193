@@ -10,19 +10,21 @@ import SwiftUI
 // View wants to access the Model by ViewModel
 // show the current state of the model 
 struct ContentView: View {
-    var game: EmojiMemorizeGame
+    @ObservedObject var game: EmojiMemorizeGame
+    // this var has a observable object
+    // when it changes, we re-draw the UI
+    
     // it's the ViewModel, a class
     // it should be created when this ContentView is created
     // body is called by the system
     var body: some View {
-        HStack{
-            // if you want to put ForEach(game.cards)
-            // cards need to be identifiable by adding id to cards
-            ForEach(0..<game.cards.count){
-                index in
-                CardView(card: game.cards[index], numberOfCards: game.cards.count)
+        HStack(alignment: .center){
+            // SwiftUI only re-draws the part really changed
+            ForEach(game.cards){
+                card in
+                CardView(card: card, numberOfCards: game.cards.count)
                     .onTapGesture(perform: {
-                        game.choose(card:game.cards[index])
+                        game.choose(card:card)
                     })
             }
         }
@@ -40,39 +42,36 @@ struct CardView: View{
     //if numberOfPair < 5 ? .largeTitle : .title
     //let fontSize =  numberOfPairs < 5 ? Font.largeTitle : Font.title
     var body: some View{
-        // declaring var in View builder (ZStack) is not allowed 
-        ZStack{
-            if card.isFaceUp{
-                RoundedRectangle(cornerRadius: 15.0)
-                    .fill(Color.white)
-                    .aspectRatio(0.66, contentMode: .fit)
-                RoundedRectangle(cornerRadius: 15.0)
-                    .stroke()
-                    .aspectRatio(0.66, contentMode: .fit)
-                CardContentView(card: card, numberOfCards: numberOfCards)
-                //Text(card.cardContent).font()
-            }
-            else{
-                //RoundedRectangle(cornerRadius: 15.0).fill()
-                RoundedRectangle(cornerRadius: 15.0)
-                    .fill()
-                    .aspectRatio(0.66, contentMode: .fit)
-            }
+        GeometryReader{ geometry in
+            // declaring var in View builder (ZStack) is not allowed
+            ZStack(alignment: .center){
+                if card.isFaceUp{
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .fill(Color.white)
+                        .aspectRatio(aspectRatio, contentMode: .fit)
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .stroke(lineWidth: lineWidth)
+                        .aspectRatio(aspectRatio, contentMode: .fit)
+                    Text(card.cardContent)
+                }
+                else{
+                    //RoundedRectangle(cornerRadius: 15.0).fill()
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .fill()
+                        .aspectRatio(aspectRatio, contentMode: .fit)
+                }
+            }.font(Font.system(size: FontScale(geometry_size: geometry.size)))
         }
     }
-}
-
-struct CardContentView: View{
-    var card: MemorizeGame<String>.Card;
-    var numberOfCards:Int
-    var body: some View{
-        if numberOfCards >= 10 {
-            return Text(card.cardContent).font(.title)
-        }
-        else{
-            return Text(card.cardContent).font(.largeTitle)
-        }
+    
+    // drawing constant
+    let aspectRatio:CGFloat = 2/3
+    let cornerRadius:CGFloat = 12.0
+    let lineWidth:CGFloat = 2.0
+    func FontScale(geometry_size:CGSize) -> CGFloat{
+        return min(geometry_size.width, geometry_size.height)*0.75
     }
+    
 }
 
 struct ContentView_Previews: PreviewProvider {
