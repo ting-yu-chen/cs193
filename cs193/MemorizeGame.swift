@@ -26,6 +26,7 @@ struct MemorizeGame<CardType>{
             cards.append(Card(cardContent: cardInitFunction(i)))
             cards.append(Card(cardContent: cardInitFunction(i)))
         }
+        cards.shuffle()
     }
     
     func choose(card: Card){

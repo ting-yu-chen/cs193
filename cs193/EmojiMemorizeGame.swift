@@ -12,12 +12,14 @@ import SwiftUI
 // ViewModel
 class EmojiMemorizeGame{
     // access to model
-    static let emojis = ["👻", "😅"]
-    private var memorizeGame: MemorizeGame<String> = MemorizeGame<String>(numberOfPairs: 2, cardInitFunction: createCardcontent);
+    static let emojisSet = ["👻", "💀", "🎃", "🍬", "😈", "🎄", "🌈", "☃️", "🍎", "🍔" ].shuffled()
+    //static let shuffledEmojiSet = emojisSet.shuffled()
+    static let numberOfPairs = Int.random(in: 2...5)
+    private var memorizeGame: MemorizeGame<String> = MemorizeGame<String>(numberOfPairs: numberOfPairs, cardInitFunction: createCardcontent);
     
     // can be inlining in the function
     static func createCardcontent(PairIndex:Int) -> String{
-        return emojis[PairIndex];
+        return emojisSet[PairIndex];
     }
     
     // provide access of Model for View
