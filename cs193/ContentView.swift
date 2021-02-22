@@ -18,13 +18,25 @@ struct ContentView: View {
     // it should be created when this ContentView is created
     // body is called by the system
     var body: some View {
-        GridView(items: game.cards){
-            // SwiftUI only re-draws the part really changed
-            card in
-            CardView(card: card).onTapGesture {game.choose(card:card)}
+        VStack{
+            HStack{
+                Text(game.getThemeName())
+                Spacer()
+                Text("Score")
+            }
+            Divider()
+            GridView(items: game.cards){
+                // SwiftUI only re-draws the part really changed
+                card in
+                CardView(card: card).onTapGesture {game.choose(card:card)}
+            }
+            
+            Button("New Game"){
+                game.restart()
+            }.buttonStyle(BorderlessButtonStyle())
         }
         .padding()
-        .foregroundColor(.orange)
+        .foregroundColor(game.getThemeColor())
         
     }
 }
@@ -55,6 +67,7 @@ struct CardView: View{
                     }
                 }
             }.font(Font.system(size: FontScale(geometry_size: geometry.size)))
+            .padding(1.5)
         }
     }
     

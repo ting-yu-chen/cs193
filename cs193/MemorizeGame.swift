@@ -6,12 +6,25 @@
 //
 
 import Foundation
+import SwiftUI
+
+struct Theme<themeType>{
+    var name:String
+    var emojiSet:[themeType]
+    var color:Color
+    init(name: String, emojiSet: [themeType], color: Color){
+        self.name = name
+        self.emojiSet = emojiSet.shuffled()
+        self.color = color 
+    }
+    
+}
 
 // model
 struct MemorizeGame<CardType> where CardType:Equatable{
     var cards:Array<Card>
     var OnlyOneFaceUpCard:Int?
-
+    var theme:Theme<CardType>
     
     // Identifiable -> constraints and gain
     // we have to add id but we gain other functions from it 
@@ -22,7 +35,7 @@ struct MemorizeGame<CardType> where CardType:Equatable{
         var id:Int
     }
     
-    init(numberOfPairs:Int, cardInitFunction: (Int)->CardType){
+    init(numberOfPairs:Int, cardInitFunction: (Int)->CardType, theme:Theme<CardType>){
         cards = Array<Card>()  // initialize the cards by empty array
         // the initialization of card content should be done by ViewModel
         // because Model doesn't know the type and content, just provides logic
@@ -32,6 +45,7 @@ struct MemorizeGame<CardType> where CardType:Equatable{
             cards.append(Card(cardContent: cardInitFunction(i), id: 2*i+1))
         }
         cards.shuffle()
+        self.theme = theme;
     }
     // Because Card is struct, it's passed by value
     // the card in choose func is a copy 
