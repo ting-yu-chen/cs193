@@ -8,13 +8,15 @@
 import Foundation
 
 // model
-struct MemorizeGame<CardType>{
+struct MemorizeGame<CardType> where CardType:Equatable{
     var cards:Array<Card>
+    var OnlyOneFaceUpCard:Int?
+
     
     // Identifiable -> constraints and gain
     // we have to add id but we gain other functions from it 
     struct Card : Identifiable{
-        var isFaceUp = true
+        var isFaceUp = false
         var isMatched = false
         var cardContent:CardType
         var id:Int
@@ -34,17 +36,26 @@ struct MemorizeGame<CardType>{
     // Because Card is struct, it's passed by value
     // the card in choose func is a copy 
     mutating func choose(card: Card){
-        print("choose a \(card)")
-        self.cards[index(of: card)].isFaceUp = !self.cards[index(of: card)].isFaceUp
-    }
-    
-    func index(of card: Card) -> Int{
-        for i in 0..<cards.count{
-            if cards[i].id == card.id {
-                return i;
+        // comma is sequential &&
+        if let chosenIdx = cards.firstIndex(matching: card), !cards[chosenIdx].isFaceUp, !cards[chosenIdx].isMatched {
+            cards[chosenIdx].isFaceUp  = !cards[chosenIdx].isFaceUp
+            if let onlyFaceUp = OnlyOneFaceUpCard{
+                if cards[chosenIdx].cardContent == cards[onlyFaceUp].cardContent{
+                    cards[chosenIdx].isMatched = true
+                    cards[onlyFaceUp].isMatched = true
+                }
+                OnlyOneFaceUpCard = nil
+            }
+            else{
+                for i in 0..<cards.count{
+                    cards[i].isFaceUp = false
+                }
+                OnlyOneFaceUpCard = chosenIdx;
+                cards[chosenIdx].isFaceUp = true
             }
         }
-        return 0;
+        // else do nothing
     }
+    
 }
 
