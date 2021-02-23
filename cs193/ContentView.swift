@@ -22,7 +22,8 @@ struct ContentView: View {
             HStack{
                 Text(game.getThemeName())
                 Spacer()
-                Text("Score")
+                Text("Score: ")
+                Text(String(game.getGameScore()))
             }
             Divider()
             GridView(items: game.cards){
@@ -33,7 +34,8 @@ struct ContentView: View {
             
             Button("New Game"){
                 game.restart()
-            }.buttonStyle(BorderlessButtonStyle())
+            }.padding().overlay(Capsule (style: .continuous).stroke())
+            
         }
         .padding()
         .foregroundColor(game.getThemeColor())
@@ -50,32 +52,23 @@ struct CardView: View{
     var body: some View{
         GeometryReader{ geometry in
             // declaring var in View builder (ZStack) is not allowed
-            ZStack(alignment: .center){
-                if card.isFaceUp{
-                    RoundedRectangle(cornerRadius: cornerRadius)
-                        .fill(Color.white)
-                        //.aspectRatio(aspectRatio, contentMode: .fit)
-                    RoundedRectangle(cornerRadius: cornerRadius)
-                        .stroke(lineWidth: lineWidth)
-                        //.aspectRatio(aspectRatio, contentMode: .fit)
-                    Text(card.cardContent)
-                }
-                else{
-                    if !card.isMatched{
-                        RoundedRectangle(cornerRadius: cornerRadius)
-                            .fill()
-                    }
-                }
-            }.font(Font.system(size: FontScale(geometry_size: geometry.size)))
-            .padding(1.5)
+            if card.isFaceUp || !card.isMatched{
+                ZStack(alignment: .center){
+                   PieShape(startAngle: Angle.degrees(0-90), endAngle: Angle.degrees(110-90))
+                       .opacity(0.5).padding()
+                   Text(card.cardContent)
+                }.cardify(isFaceUp: card.isFaceUp)
+                .font(Font.system(size: FontScale(geometry_size: geometry.size)))
+                .padding(1.5)
+            }
         }
     }
     
     // drawing constant
     //let aspectRatio:CGFloat = 2/3
-    let cornerRadius:CGFloat = 12.0
-    let lineWidth:CGFloat = 2.0
-    func FontScale(geometry_size:CGSize) -> CGFloat{
+    private let cornerRadius:CGFloat = 12.0
+    private let lineWidth:CGFloat = 2.0
+    private func FontScale(geometry_size:CGSize) -> CGFloat{
         return min(geometry_size.width, geometry_size.height)*0.6
     }
     
@@ -84,6 +77,8 @@ struct CardView: View{
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         // create viewModel on fly for preview
-        ContentView(game:EmojiMemorizeGame())
+        let game = EmojiMemorizeGame()
+        game.choose(card: game.cards[0])
+        return ContentView(game: game)
     }
 }

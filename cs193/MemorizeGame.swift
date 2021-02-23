@@ -22,15 +22,16 @@ struct Theme<themeType>{
 
 // model
 struct MemorizeGame<CardType> where CardType:Equatable{
-    var cards:Array<Card>
-    var OnlyOneFaceUpCard:Int?
+    private(set) var cards:Array<Card> // readonly type
+    private var OnlyOneFaceUpCard:Int?
     var theme:Theme<CardType>
-    
+    var score = 0 
     // Identifiable -> constraints and gain
     // we have to add id but we gain other functions from it 
     struct Card : Identifiable{
         var isFaceUp = false
         var isMatched = false
+        var isSeen = false
         var cardContent:CardType
         var id:Int
     }
@@ -52,12 +53,19 @@ struct MemorizeGame<CardType> where CardType:Equatable{
     mutating func choose(card: Card){
         // comma is sequential &&
         if let chosenIdx = cards.firstIndex(matching: card), !cards[chosenIdx].isFaceUp, !cards[chosenIdx].isMatched {
-            cards[chosenIdx].isFaceUp  = !cards[chosenIdx].isFaceUp
+            cards[chosenIdx].isFaceUp  = true
             if let onlyFaceUp = OnlyOneFaceUpCard{
                 if cards[chosenIdx].cardContent == cards[onlyFaceUp].cardContent{
                     cards[chosenIdx].isMatched = true
                     cards[onlyFaceUp].isMatched = true
+                    score+=2
                 }
+                else{
+                    if cards[chosenIdx].isSeen {score-=1}
+                    if cards[onlyFaceUp].isSeen {score-=1}
+                }
+                cards[chosenIdx].isSeen = true
+                cards[onlyFaceUp].isSeen = true
                 OnlyOneFaceUpCard = nil
             }
             else{

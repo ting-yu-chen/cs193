@@ -8,8 +8,9 @@
 import SwiftUI
 
 struct GridView<Item, ItemView>: View where Item:Identifiable, ItemView:View {
-    var items:[Item]
-    var viewForItem: (Item) -> ItemView // it's a function (take a item and return its view )
+    private var items:[Item]
+    private var viewForItem: (Item) -> ItemView // it's a function (take a item and return its view )
+    // they should be public if no init exists
     
     init (items: [Item],  viewForItem : @escaping (Item) -> ItemView){
         self.items = items
@@ -26,7 +27,7 @@ struct GridView<Item, ItemView>: View where Item:Identifiable, ItemView:View {
         }
     }
     
-    func body(item:Item, layout:GridLayout) -> some View {
+    private func body(item:Item, layout:GridLayout) -> some View {
         let index = items.firstIndex(matching: item)!;
         return viewForItem(item)
             .frame(width: layout.itemSize.width, height: layout.itemSize.height, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)

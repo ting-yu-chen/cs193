@@ -22,7 +22,8 @@ class EmojiMemorizeGame: ObservableObject{
     static let themes:[Theme<String>] = [theme1, theme2, theme3]
     // add a theme by creating a Theme and append to the array 
 
-    static func createNewGame(themes: [Theme<String>])->MemorizeGame<String>{
+    // create new game needs to be executed in the ViewModel 
+    private static func createNewGame(themes: [Theme<String>])->MemorizeGame<String>{
         let randomThemeIdx = Int.random(in: 0..<themes.count)
         let numberOfPairs = Int.random(in: 3..<themes[randomThemeIdx].emojiSet.count)
         // can be inlining in the function
@@ -55,5 +56,9 @@ class EmojiMemorizeGame: ObservableObject{
     
     func getThemeColor()-> Color{
         return memorizeGame.theme.color
+    }
+    
+    func getGameScore() ->Int{
+        return memorizeGame.score 
     }
 }
